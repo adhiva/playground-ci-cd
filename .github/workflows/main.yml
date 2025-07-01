@@ -24,6 +24,7 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - name: Use tag from test job
         run: |
           echo "Using tag: ${{ needs.test.outputs.tag_name }}"
