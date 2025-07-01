@@ -9,3 +9,16 @@ jobs:
     - uses: actions/setup-node@v1
     - run: npm install
     - run: npm test
+    - name: Generate tag name
+      id: set-tag
+      run: |
+        SHORT_SHA=$(echo "${GITHUB_SHA}" | cut -c1-7)
+        TIMESTAMP=$(date +%s)
+        echo "TAG_NAME=${SHORT_SHA}-${TIMESTAMP}" >> $GITHUB_ENV
+        echo "tag_name=${SHORT_SHA}-${TIMESTAMP}" >> $GITHUB_OUTPUT
+  
+  test-2:
+    needs: test
+    steps:
+      - run: |
+          echo "Using tag: ${{ needs.test.outputs.tag_name }}"
