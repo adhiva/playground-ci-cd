@@ -4,11 +4,14 @@ on: push
 jobs:
   test:
     runs-on: ubuntu-latest
+    outputs:
+      tag_name: ${{ steps.set-tag.outputs.tag_name }}  # ✅ this is what was missing
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
       - run: npm install
       - run: npm test
+
       - name: Generate tag name
         id: set-tag
         run: |
@@ -16,9 +19,11 @@ jobs:
           TIMESTAMP=$(date +%s)
           echo "TAG_NAME=${SHORT_SHA}-${TIMESTAMP}" >> $GITHUB_ENV
           echo "tag_name=${SHORT_SHA}-${TIMESTAMP}" >> $GITHUB_OUTPUT
-  
+
   test-2:
     needs: test
+    runs-on: ubuntu-latest
     steps:
-      - run: |
+      - name: Use tag from test job
+        run: |
           echo "Using tag: ${{ needs.test.outputs.tag_name }}"
